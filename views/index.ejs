@@ -1,4 +1,15 @@
 <% include ./partials/header.ejs%>
   <h1>Index Page</h1>
-  <h3>If you can access this means you are logged In</h3>
+  <form ref='uploadForm'
+    id='uploadForm'
+    action='/upload'
+    method='post'
+    encType="multipart/form-data">
+      <input type="file" name="sampleFile" />
+      <input type='submit' value='Upload!' />
+  </form>
+  <%files.forEach((file)=>{%>
+    <p><%=file.name%>  address : <a href="https://ipfs.io/ipfs/<%=file.hash%>" target="__blank">Click here to Download</a> <%=file.size%></p>
+  <%});%>
+
 <% include ./partials/footer.ejs%>
