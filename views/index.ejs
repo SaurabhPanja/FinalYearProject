@@ -1,15 +1,51 @@
 <% include ./partials/header.ejs%>
-  <h1>Index Page</h1>
   <form ref='uploadForm'
-    id='uploadForm'
     action='/upload'
     method='post'
-    encType="multipart/form-data">
-      <input type="file" name="sampleFile" />
-      <input type='submit' value='Upload!' />
+    encType="multipart/form-data" class="dropzone animated rubberBand">
+
   </form>
-  <%files.forEach((file)=>{%>
-    <p><%=file.name%>  address : <a href="https://ipfs.io/ipfs/<%=file.hash%>" target="__blank">Click here to Download</a> <%=file.size%></p>
+
+  <a class="btn btn-lg btn-primary d-block my-2 mx-0 hvr-grow" href="/">Upload <i class="fas fa-upload"></i></a>
+    <div class="row m-auto">
+      <%files.forEach((file)=>{%>
+      <div class="col-lg-4 my-1" data-aos="zoom-in-up">
+        <div class="card shadow bg-white rounded hvr-shutter-out-vertical" style="width: 18rem;">
+          <%if((file.filetype).slice(0,5) === 'image'){%>
+            <i class="far fa-image card-img-top text-success mt-2"></i>
+          <%}else if(file.filetype === 'application/pdf'){%>
+            <i class="far fa-file-pdf card-img-top text-danger mt-2"></i>
+          <%}else if((file.filetype).slice(0,5) === 'video'){%>
+            <i class="far fa-file-video card-img-top text-info mt-2"></i>
+          <%}else if((file.filetype).slice(0,5) === 'audio'){%>
+            <i class="fas fa-music card-img-top text-primary mt-2"></i>
+          <%}else{%>
+            <i class="fas fa-file card-img-top mt-2"></i>
+          <%}%>
+          <div class="card-body">
+            <%if((file.name).length>25){%>
+              <h4 class="card-tile my-0"><%=(file.name).slice(0,15) + "..." + (file.name).slice(-6)%></h4>
+            <%}else{%>
+              <h4 class="card-title my-0"><%=(file.name)%></h4>
+            <%}%>
+            <div class="row">
+              <div class="col-sm-6">
+                <a class="btn btn-xs btn-outline-success m-1 hvr-pulse-grow" href="https://ipfs.io/ipfs/<%=file.hash%>" target="__blank">Download<i class="fas fa-download"></i></a>
+              </div>
+              <div class="col-sm-6">
+                <form action="/deleteFile/<%=_id%>/file/<%=file._id%>" method="post">
+                  <button type="submit" class="btn btn-xs btn-outline-danger m-1 hvr-wobble-horizontal">Delete <i class="fas fa-trash-alt"></i></button>
+                </form>
+              </div>
+              <div class="col-sm-12">
+                <span class="btn btn-secondary p-1 m-1"><%=(file.size/1048576).toFixed(2)%> MB</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
   <%});%>
+</div>
 
 <% include ./partials/footer.ejs%>

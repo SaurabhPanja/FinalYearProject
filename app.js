@@ -1,5 +1,7 @@
 // *********************
-// Saurabh Panja panjasaurabh@gmail.com
+// Decentralized Storage System
+// Sarjil Saurabh Sagar Krunal
+// Final Year Project
 // *********************
 var express             = require('express'),
   app                   = express(),
@@ -39,12 +41,11 @@ passport.deserializeUser(User.deserializeUser());
 
 //index page
 app.get('/',isLoggedIn, function(req,res){
-  console.log(req.user.username);
   User.findOne({username:req.user.username},function(err,data){
     if(err)
       console.log(err);
     else{
-      res.render('index',{files:data.files});
+      res.render('index',{files:data.files,_id:req.user._id,name:data.name});
     }
   })
 });
@@ -96,34 +97,24 @@ app.post('/upload', function(req, res) {
   }
 
   // The name of the input field (i.e. "sampleFile") is used to retrieve the uploaded file
-  let sampleFile = req.files.sampleFile;
-  let name = sampleFile.name;
-  let path = "public/"+name;
+  let sampleFile = req.files.file,
+      name       = sampleFile.name,
+      type       = sampleFile.mimetype,
+      path       = "public/"+name;
   // Use the mv() method to place the file somewhere on your server
+  console.log(typeof sampleFile.mimetype,type);
   sampleFile.mv('public/'+name, function(err) {
     if (err)
       return res.status(500).send(err);
       ipfs.addFromFs(path, { recursive: false },
       (err, result) => {
       if (err) { throw err }
-      console.log(result);
-      console.log(typeof(result[0].path),typeof(result[0].hash),typeof(result[0].size));
-      // Users.files.push({
-      //   name : result[0].path,
-      //   hash : result[0].hash,
-      //   size : result[0].size
-      // },function(err,data){
-      //   if(err){
-      //     console.log(err);
-      //   }else{
-      //     console.log(data);
-      //     data.save
-      //   }
-      // });
+
       User.findOne({username:req.user.username},function(err,addFiles){
         addFiles.files.push({
             name : result[0].path,
             hash : result[0].hash,
+            filetype : type,
             size : result[0].size
         });
         addFiles.save();
@@ -140,6 +131,20 @@ app.post('/upload', function(req, res) {
     });
 
   });
+});
+
+app.post('/deleteFile/:user_id/file/:file_id',function(req,res){
+  let user_id = req.params.user_id,
+        file  = req.params.file_id;
+  User.findById( user_id,function(err,currentUser){
+      if(err){
+        console.log(err);
+      }else{
+        currentUser.files.pull(file);
+        currentUser.save();
+      }
+    });
+  res.redirect('/');
 });
 
 //error 404

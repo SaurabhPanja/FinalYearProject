@@ -8,6 +8,7 @@ var userSchema = new mongoose.Schema({
   files :[{
     name : String,
     hash : String,
+    filetype : String,
     size : Number
   }]
 });
