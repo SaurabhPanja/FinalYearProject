@@ -20,6 +20,11 @@
         <!-- Sign up form -->
         <section class="signup">
             <div class="container">
+              <%if(error.length>0){%>
+                <div class="alert alert-danger" role="alert">
+                  <%=error%>
+                </div>
+              <%}%>
                 <div class="signup-content">
                     <div class="signup-form">
                         <h2 class="form-title">Sign up</h2>

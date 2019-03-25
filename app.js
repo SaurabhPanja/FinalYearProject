@@ -7,6 +7,7 @@ var express             = require('express'),
   app                   = express(),
   session               = require('express-session'),
   passport              = require('passport'),
+  flash                 = require('connect-flash'),
   LocalStrategy         = require('passport-local'),
   passportLocalMongoose = require('passport-local-mongoose'),
   bodyParser            = require('body-parser'),
@@ -35,6 +36,7 @@ app.use(session({
 }));
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(flash());
 passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
@@ -42,28 +44,30 @@ passport.deserializeUser(User.deserializeUser());
 //index page
 app.get('/',isLoggedIn, function(req,res){
   User.findOne({username:req.user.username},function(err,data){
-    if(err)
-      console.log(err);
+    if(err){
+        res.redirect('/login');
+    }
     else{
       res.render('index',{files:data.files,_id:req.user._id,name:data.name});
     }
-  })
+  });
 });
 
 //login page
 app.get('/login',function(req,res){
-  res.render('login');
+  res.render('login',{error:req.flash("error"),success:req.flash("success")});
 });
 
 app.post('/login',passport.authenticate('local',{
   successRedirect : '/',
+  failureFlash    : {type:"error",message  :"Incorrect Credentials "},
   failureRedirect : '/login'
 }),function(req,res){
 });
 
 //signUp page
 app.get('/signUp',function(req,res){
-  res.render('signUp');
+  res.render('signUp',{error:req.flash("error")});
 });
 //signUp logic
 app.post('/signUp',function(req,res){
@@ -74,8 +78,8 @@ app.post('/signUp',function(req,res){
     }
   ),req.body.password,function(err,user){
     if(err){
-      console.log(err);
-      return res.render('signUp');
+      req.flash("error",err.message);
+      return res.redirect('/signUp');
     }
     passport.authenticate("local")(req,res,function(){
       // console.log('Executed');
@@ -87,6 +91,7 @@ app.post('/signUp',function(req,res){
 //logout
 app.get('/logout',function(req,res){
   req.logout();
+  req.flash("success","Logged out successfully!");
   res.redirect('/login');
 });
 
