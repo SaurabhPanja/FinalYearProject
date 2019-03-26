@@ -5,6 +5,8 @@ var userSchema = new mongoose.Schema({
   name : String,
   username : String,
   password : String,
+  resetPasswordToken : String,
+  resetPasswordExpires: Date,
   files :[{
     name : String,
     hash : String,

@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/SaurabhPanja/FinalYearProject#readme",
   "dependencies": {
+    "async": "^2.6.2",
     "body-parser": "^1.18.3",
     "connect-flash": "^0.1.1",
     "ejs": "^2.6.1",
@@ -26,6 +27,7 @@
     "fs": "0.0.1-security",
     "ipfs-http-client": "^28.1.1",
     "mongoose": "^5.4.3",
+    "nodemailer": "^6.0.0",
     "passport": "^0.4.0",
     "passport-local": "^1.0.0",
     "passport-local-mongoose": "^5.0.1",
